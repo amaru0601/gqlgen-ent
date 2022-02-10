@@ -8,11 +8,62 @@ import (
 )
 
 var (
+	// ContractsColumns holds the columns for the "contracts" table.
+	ContractsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "start_date", Type: field.TypeTime},
+		{Name: "end_date", Type: field.TypeTime},
+		{Name: "pay_amount", Type: field.TypeFloat64},
+		{Name: "pay_date", Type: field.TypeTime},
+		{Name: "property_contract", Type: field.TypeInt, Nullable: true},
+	}
+	// ContractsTable holds the schema information for the "contracts" table.
+	ContractsTable = &schema.Table{
+		Name:       "contracts",
+		Columns:    ContractsColumns,
+		PrimaryKey: []*schema.Column{ContractsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "contracts_properties_contract",
+				Columns:    []*schema.Column{ContractsColumns[5]},
+				RefColumns: []*schema.Column{PropertiesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
+	// PropertiesColumns holds the columns for the "properties" table.
+	PropertiesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "class", Type: field.TypeEnum, Enums: []string{"HOUSE", "APARTMENT", "PREMISES", "OFFICE", "VEHICLE"}, Default: "APARTMENT"},
+		{Name: "address", Type: field.TypeString},
+		{Name: "city", Type: field.TypeString},
+		{Name: "description", Type: field.TypeString},
+		{Name: "deleted", Type: field.TypeBool},
+		{Name: "user_properties", Type: field.TypeInt, Nullable: true},
+	}
+	// PropertiesTable holds the schema information for the "properties" table.
+	PropertiesTable = &schema.Table{
+		Name:       "properties",
+		Columns:    PropertiesColumns,
+		PrimaryKey: []*schema.Column{PropertiesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "properties_users_properties",
+				Columns:    []*schema.Column{PropertiesColumns[6]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+	}
 	// UsersColumns holds the columns for the "users" table.
 	UsersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
-		{Name: "age", Type: field.TypeInt},
-		{Name: "name", Type: field.TypeString},
+		{Name: "names", Type: field.TypeString},
+		{Name: "lastnames", Type: field.TypeString},
+		{Name: "birthday", Type: field.TypeTime},
+		{Name: "email", Type: field.TypeString},
+		{Name: "activate", Type: field.TypeBool},
+		{Name: "created_at", Type: field.TypeTime},
 	}
 	// UsersTable holds the schema information for the "users" table.
 	UsersTable = &schema.Table{
@@ -20,11 +71,43 @@ var (
 		Columns:    UsersColumns,
 		PrimaryKey: []*schema.Column{UsersColumns[0]},
 	}
+	// UserContractsColumns holds the columns for the "user_contracts" table.
+	UserContractsColumns = []*schema.Column{
+		{Name: "user_id", Type: field.TypeInt},
+		{Name: "contract_id", Type: field.TypeInt},
+	}
+	// UserContractsTable holds the schema information for the "user_contracts" table.
+	UserContractsTable = &schema.Table{
+		Name:       "user_contracts",
+		Columns:    UserContractsColumns,
+		PrimaryKey: []*schema.Column{UserContractsColumns[0], UserContractsColumns[1]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "user_contracts_user_id",
+				Columns:    []*schema.Column{UserContractsColumns[0]},
+				RefColumns: []*schema.Column{UsersColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+			{
+				Symbol:     "user_contracts_contract_id",
+				Columns:    []*schema.Column{UserContractsColumns[1]},
+				RefColumns: []*schema.Column{ContractsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ContractsTable,
+		PropertiesTable,
 		UsersTable,
+		UserContractsTable,
 	}
 )
 
 func init() {
+	ContractsTable.ForeignKeys[0].RefTable = PropertiesTable
+	PropertiesTable.ForeignKeys[0].RefTable = UsersTable
+	UserContractsTable.ForeignKeys[0].RefTable = UsersTable
+	UserContractsTable.ForeignKeys[1].RefTable = ContractsTable
 }

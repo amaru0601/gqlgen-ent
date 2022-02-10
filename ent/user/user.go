@@ -7,20 +7,54 @@ const (
 	Label = "user"
 	// FieldID holds the string denoting the id field in the database.
 	FieldID = "id"
-	// FieldAge holds the string denoting the age field in the database.
-	FieldAge = "age"
-	// FieldName holds the string denoting the name field in the database.
-	FieldName = "name"
+	// FieldNames holds the string denoting the names field in the database.
+	FieldNames = "names"
+	// FieldLastnames holds the string denoting the lastnames field in the database.
+	FieldLastnames = "lastnames"
+	// FieldBirthday holds the string denoting the birthday field in the database.
+	FieldBirthday = "birthday"
+	// FieldEmail holds the string denoting the email field in the database.
+	FieldEmail = "email"
+	// FieldActivate holds the string denoting the activate field in the database.
+	FieldActivate = "activate"
+	// FieldCreatedAt holds the string denoting the createdat field in the database.
+	FieldCreatedAt = "created_at"
+	// EdgeProperties holds the string denoting the properties edge name in mutations.
+	EdgeProperties = "properties"
+	// EdgeContracts holds the string denoting the contracts edge name in mutations.
+	EdgeContracts = "contracts"
 	// Table holds the table name of the user in the database.
 	Table = "users"
+	// PropertiesTable is the table that holds the properties relation/edge.
+	PropertiesTable = "properties"
+	// PropertiesInverseTable is the table name for the Property entity.
+	// It exists in this package in order to avoid circular dependency with the "property" package.
+	PropertiesInverseTable = "properties"
+	// PropertiesColumn is the table column denoting the properties relation/edge.
+	PropertiesColumn = "user_properties"
+	// ContractsTable is the table that holds the contracts relation/edge. The primary key declared below.
+	ContractsTable = "user_contracts"
+	// ContractsInverseTable is the table name for the Contract entity.
+	// It exists in this package in order to avoid circular dependency with the "contract" package.
+	ContractsInverseTable = "contracts"
 )
 
 // Columns holds all SQL columns for user fields.
 var Columns = []string{
 	FieldID,
-	FieldAge,
-	FieldName,
+	FieldNames,
+	FieldLastnames,
+	FieldBirthday,
+	FieldEmail,
+	FieldActivate,
+	FieldCreatedAt,
 }
+
+var (
+	// ContractsPrimaryKey and ContractsColumn2 are the table columns denoting the
+	// primary key for the contracts relation (M2M).
+	ContractsPrimaryKey = []string{"user_id", "contract_id"}
+)
 
 // ValidColumn reports if the column name is valid (part of the table columns).
 func ValidColumn(column string) bool {
@@ -31,3 +65,12 @@ func ValidColumn(column string) bool {
 	}
 	return false
 }
+
+var (
+	// NamesValidator is a validator for the "names" field. It is called by the builders before save.
+	NamesValidator func(string) error
+	// LastnamesValidator is a validator for the "lastnames" field. It is called by the builders before save.
+	LastnamesValidator func(string) error
+	// EmailValidator is a validator for the "email" field. It is called by the builders before save.
+	EmailValidator func(string) error
+)

@@ -1,0 +1,81 @@
+interface Node {
+    id: ID!
+}
+
+scalar Time
+
+type User implements Node {
+    id: ID!
+    createdAt: Time
+    names: String!
+    lastnames: String!
+    activate: Boolean!
+    email: String!
+    birthday: Time
+}
+
+enum TypeProperty {
+    HOUSE,
+    APARTMENT,
+    PREMISES,
+    OFFICE,
+    VEHICLE
+}
+
+type Property {
+    class: TypeProperty!
+    deleted: Boolean!
+    owner: User!
+    address: String!
+    description: String!
+    city: String!
+}
+
+type Contract {
+    startDate: Time!
+    endDate: Time!
+    payAmount: Float!
+    payDate: Time!
+    tenant: User!
+    property: Property!
+}
+
+input PropertyInput {
+    class: TypeProperty! = APARTMENT
+    ownerID: ID!
+    address: String!
+    description: String!
+    city: String!
+}
+
+input UserInput {
+    birthday: Time
+    names: String!
+    lastnames: String!
+    activate: Boolean
+    email: String!
+}
+
+input ContractInput {
+    ownerID: ID!
+    tenantID: ID!
+    startDate: Time!
+    endDate: Time!
+    payAmount: Float!
+    payDate: Time!
+    propertyID: ID!
+}
+
+type Mutation {
+    createUser(user: UserInput!): User!
+    createProperty(property: PropertyInput!): Property!
+    createContract(contract: ContractInput!): Contract!
+}
+
+type Query {
+    users: [User!]
+    getProperty(id: ID!): Property!
+    getContract(id: ID!): Contract!
+    node(id: ID!): Node
+    nodes(ids: [ID!]!): [Node]!
+}

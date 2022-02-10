@@ -1,0 +1,22 @@
+schema:
+  - bug.graphql
+
+resolver:
+  layout: follow-schema
+  dir: .
+
+autobind:
+  - entgo.io/bug/ent
+
+models:
+  ID:
+    model:
+      - github.com/99designs/gqlgen/graphql.IntID
+
+  TypeProperty:
+    model:
+      - entgo.io/bug/ent/property.Class
+
+  Node:
+    model:
+      - entgo.io/bug/ent.Noder

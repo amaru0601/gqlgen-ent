@@ -9,6 +9,32 @@ import (
 	"entgo.io/bug/ent"
 )
 
+// The ContractFunc type is an adapter to allow the use of ordinary
+// function as Contract mutator.
+type ContractFunc func(context.Context, *ent.ContractMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ContractFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.ContractMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ContractMutation", m)
+	}
+	return f(ctx, mv)
+}
+
+// The PropertyFunc type is an adapter to allow the use of ordinary
+// function as Property mutator.
+type PropertyFunc func(context.Context, *ent.PropertyMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f PropertyFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	mv, ok := m.(*ent.PropertyMutation)
+	if !ok {
+		return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PropertyMutation", m)
+	}
+	return f(ctx, mv)
+}
+
 // The UserFunc type is an adapter to allow the use of ordinary
 // function as User mutator.
 type UserFunc func(context.Context, *ent.UserMutation) (ent.Value, error)

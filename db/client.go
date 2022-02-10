@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"entgo.io/bug/ent"
+	"entgo.io/bug/ent/migrate"
 	_ "github.com/lib/pq"
 )
 
@@ -14,7 +15,9 @@ func GetClient() (*ent.Client, error) {
 		log.Fatalf("failed connecting to postgres: %v", err)
 		return nil, err
 	}
-	if err := client.Schema.Create(context.Background()); err != nil {
+	if err := client.Schema.Create(
+		context.Background(),
+		migrate.WithGlobalUniqueID(true)); err != nil {
 		log.Fatalf("failed creating schema: %v", err)
 		return nil, err
 	}
